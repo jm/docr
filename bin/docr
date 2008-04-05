@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+#
+#  Created by Jeremy McAnally on 2007-5-28.
+#  Copyright (c) 2007. All rights reserved.
+
+require 'optparse'
+require File.dirname(__FILE__) + '/../lib/docr'
+
+# NOTE: the option -p/--path= is given as an example, and should probably be replaced in your application.
+
+OPTIONS = {
+  :path     => Dir.getwd,
+  :output_format => 'html',
+  :files => ''
+}
+MANDATORY_OPTIONS = %w( )
+
+parser = OptionParser.new do |opts|
+  opts.banner = <<BANNER
+docr - An RDoc alternative
+
+Usage: #{File.basename($0)} [options]
+
+Options are:
+BANNER
+  opts.separator ""
+  opts.on("-p", "--path=PATH", String,
+          "The root path for selecting files",
+          "Default: current working directory") { |OPTIONS[:path]| }
+  opts.on("-f", "--output-format=FORMAT", String,
+          "The output format for the coverage report",
+          "Default: HTML") { |OPTIONS[:output_format]| }
+  opts.on("-h", "--help",
+          "Show this help message.") { puts opts; exit }
+  opts.parse!(ARGV)
+
+  if MANDATORY_OPTIONS && MANDATORY_OPTIONS.find { |option| OPTIONS[option.to_sym].nil? }
+    puts opts; exit
+  end
+end
+
+OPTIONS[:files] = ARGV
+@documentation = DocR::Parser.new(OPTIONS)

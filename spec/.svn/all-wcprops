@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 21
+/docr/!svn/ver/1/spec
+END
+blank_code.rb
+K 25
+svn:wc:ra_dav:version-url
+V 35
+/docr/!svn/ver/1/spec/blank_code.rb
+END
+mock_code.rb
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/docr/!svn/ver/1/spec/mock_code.rb
+END
+dcov_spec.rb
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/docr/!svn/ver/1/spec/dcov_spec.rb
+END
+just_a_method.rb
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/docr/!svn/ver/4/spec/just_a_method.rb
+END
+spec_helper.rb
+K 25
+svn:wc:ra_dav:version-url
+V 36
+/docr/!svn/ver/1/spec/spec_helper.rb
+END
+just_a_class.rb
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/docr/!svn/ver/1/spec/just_a_class.rb
+END
+just_a_module.rb
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/docr/!svn/ver/1/spec/just_a_module.rb
+END
+spec.opts
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/docr/!svn/ver/1/spec/spec.opts
+END

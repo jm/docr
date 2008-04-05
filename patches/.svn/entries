@@ -1,0 +1,40 @@
+8
+
+dir
+3
+http://code.jeremymcanally.com/docr/patches
+http://code.jeremymcanally.com/docr
+
+
+
+2007-12-17T04:23:22.604838Z
+1
+jeremy
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+4d41afae-7341-0410-a8c4-88a274f079f5
+
+controller_mixin.diff
+file
+
+
+
+
+2007-12-17T04:24:25.000000Z
+0186af87df788f7b858a18c49bb71387
+2007-12-17T04:23:22.604838Z
+1
+jeremy
+

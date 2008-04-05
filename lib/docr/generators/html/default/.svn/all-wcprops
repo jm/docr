@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/docr/!svn/ver/1/lib/docr/generators/html/default
+END
+class.erb
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/docr/!svn/ver/4/lib/docr/generators/html/default/class.erb
+END
+index.erb
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/docr/!svn/ver/4/lib/docr/generators/html/default/index.erb
+END

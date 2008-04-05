@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <title><%= klass.full_name %></title>
+    
+    <style>
+      body { font-family: sans-serif; background: #ccc; }
+      h1 { background: #240000; padding: 25px 10px 10px 10px; color: white; }
+      h1 span { color: #462222; }
+      h2 { color: #999; font-size: 14pt; }
+      ul.methods { list-style-type: none; padding: 0px 0px 0px 1.5em; }
+      h3 { border: 1px solid #000050; margin: 0px; padding: 5px 10px; background: #000024; color: white; font-size: 16pt; }
+      p.method_doc { background: white; margin: 0px 0px 5px 0px; padding: 25px; }
+      h3 span.params { color: #333346; }
+    </style>
+  </head>
+  
+  <body>
+    <h1><span>class</span> <%= klass.full_name %></h1>
+    <p><%= klass.comment.to_s.clean %></p>
+    
+    <h2>Public Methods</h2>
+    <ul class="methods">
+      <% methods[:public].each do |meth| %>
+      <li>
+        <h3><%= meth.name %><span class="params"><%= meth.params unless meth.params == '()' %></span></h3>
+        <% unless meth.comment.nil? || meth.comment == '' %>
+          <p class="method_doc"><%= meth.comment.to_s.clean || '' %></p>
+        <% else %>
+          <br />
+        <% end %>
+      </li>
+      <% end %>
+    </ul>
+    
+    <h2>Private Methods</h2>
+    <ul class="methods">
+      <% methods[:private].each do |meth| %>
+      <li>
+        <h3><%= meth.name %><span class="params"><%= meth.params unless meth.params == '()' %></span></h3>
+        <% unless meth.comment.nil? || meth.comment == '' %>
+          <p class="method_doc"><%= meth.comment.to_s.clean || '' %></p>
+        <% else %>
+          <br />
+        <% end %>
+      </li>
+      <% end %>
+    </ul>
+    
+  </body>
+</html>

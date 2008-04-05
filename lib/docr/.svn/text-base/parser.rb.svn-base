@@ -1,0 +1,231 @@
+require 'rdoc/rdoc'
+require File.dirname(__FILE__) + '/processed_token.rb'
+require File.dirname(__FILE__) + '/stats'
+
+# Makes +stats+ accessible to us so we can inject our own.
+# We also add a +classifier+ attribute to the code object classes.
+module RDoc
+  class RDoc
+    attr_accessor :stats
+  end
+  
+  module Helpers
+    def initialize(*args)
+      super(*args)
+    end
+    
+    def full_name
+      hierarchy = self.name
+      inspect = self
+      while (hier_piece = inspect.parent)
+        hierarchy = hier_piece.name + "::" + hierarchy unless hier_piece.name == 'TopLevel'
+        inspect = hier_piece
+      end
+      
+      hierarchy
+    end
+  end
+  
+  class AnyMethod
+    include Helpers
+    
+    def classifier
+      :method
+    end
+    
+    def initialize_reporting_data
+      @reporting_data[:parameters_without_coverage] = []
+      @reporting_data[:default_values_without_coverage] = []
+    end
+  end
+  
+  class NormalClass
+    include Helpers
+    
+    def classifier
+      :class
+    end
+    
+    def initialize_reporting_data
+    end
+  end
+  
+  class NormalModule
+    include Helpers
+    
+    def classifier
+      :module
+    end
+    
+    def initialize_reporting_data
+    end
+  end
+end
+
+class String
+  # Lets us clean up comment strings
+  def clean
+    gsub(/\n#/, '').gsub(/^#/, '')
+  end
+end
+
+module DocR  
+  # Mocked options object to feed to RDoc
+  class RDocOptionsMock
+    attr_accessor :files
+
+    def initialize(file_list)
+      @files = file_list
+    end
+
+    def method_missing(*args)
+      false
+    end
+  end
+  
+  # Main class
+  class Parser    
+    attr_accessor :hierarchy, :stats, :tokens, :structured_tokens
+    
+    # Grab the arguments from the DCov init script or
+    # another calling script and feed them to RDoc for
+    # parsing.
+    def initialize(options)
+      @options = options
+      raise "No files to document!" if @options[:files] == [] || @options[:files] == nil
+      
+      # Setup the analyzed tokens array so we can keep track of which methods we've already
+      # taken a look at...
+      @processed_tokens = []
+      
+      # Setup a hash for a properly structured, unabmbiguous token structure.
+      # As nice as CodeObjects is, it lists some things twice (not really but 
+      # there's no way to tell easily.)
+      @tokens = {:class => [], :module => [], :method => []}
+      @structured_tokens = {}
+      
+      r = RDoc::RDoc.new
+      
+      # Instantiate our little hacked Stats class...
+      @stats = DocR::Stats.new
+      r.stats = @stats
+      
+      # Setup any options we need here...
+      Options.instance.parse(["--tab-width", 2], {})
+            
+      # We have to use #send because #parse_files is private
+      parsed_structure = r.send(:parse_files, RDocOptionsMock.new(options[:files]))
+      
+      # Analyze it, Spiderman!
+      process parsed_structure
+      
+      # Generate the documentation!
+      generate
+    end
+    
+    # Method to initialize analysis of the code; passes
+    # structure off to the process method which actually
+    # processes the tokens.
+    def process(hierarchy)
+      @hierarchy = hierarchy
+
+      @hierarchy.each do |hier| 
+        hier.classes.each do |cls| 
+          process_token cls
+        end
+        
+        hier.modules.each do |mod|
+          process_token mod
+        end
+      end
+            
+      # Create a properly nested structure
+      @structured_tokens = {}
+      tokens[:class].each {|cls| @structured_tokens[cls.full_name] = [cls, {:public => [], :private => []}]}
+      tokens[:module].each {|mod| @structured_tokens[mod.full_name] = [mod, {:public => [], :private => []}]}
+      @structured_tokens['[Toplevel]'] = [TopLevel.new, {:public => [], :private => []}]
+      
+      tokens[:method].each do |method|
+        if (@structured_tokens.has_key?(method.parent.full_name))
+          @structured_tokens[method.parent.full_name][1][method.visibility.to_sym] << method
+        else
+          @structured_tokens['[Toplevel]'][1][method.visibility.to_sym] << method
+        end
+      end
+      
+      @stats.print   
+    end
+    
+    # Method to process all the tokens for a token...recursion FTW! :)
+    def process_token(token)
+      processed_token = ProcessedToken.new(token.name, token.parent)
+      unless @processed_tokens.include?(processed_token)
+        tokens[token.classifier] << token
+        @processed_tokens << processed_token
+                 
+        [:method_list, :classes, :modules].each do |meth, type|
+          token.send(meth).each do |item|
+            process_token item
+          end if token.respond_to?(meth)
+        end
+      end
+    end
+    
+    # Generate the output based on the format specified
+    # TODO: Have an argument sanity check at startup to make sure we actually have a generator for the format
+    def generate
+      print "Generating documentation..."
+      require File.dirname(__FILE__) + "/generators/#{@options[:output_format]}/generator.rb"
+      generator = DocR::Generator.new(structured_tokens)
+      report = generator.generate
+      print "done.\n"
+      
+      # print "Writing documentation..."
+      # if (!File.exists?("#{@options[:path]}/coverage.html")) || (File.writable?("#{@options[:path]}/coverage.html"))
+      #   output_file = File.open("#{@options[:path]}/coverage.html", "w")
+      #   output_file.write report
+      #   output_file.close
+      #   print "done.\n"
+      # else
+      #   raise "Can't write to [#{@options[:path]}/coverage.html]."
+      # end
+    end
+    
+    def param_names_for(token)
+      if token.params
+        params = token.params.dup
+        params.gsub!(/\(/, '')
+        params.gsub!(/\)/, '')
+
+        if params.include?(",")
+          params = params.split(",")
+        else
+          params = [params]
+        end
+
+        processed_params = []
+
+        params.each do |param|
+          param_value = nil
+
+          # We have a default value...
+          if param.include?('=')
+            param_pieces = param.scan(/(.*)=(.*)/)[0]
+            param = param_pieces[0].strip 
+            param_value = param_pieces[1].strip
+          end
+
+          processed_params << [param, param_value]
+        end
+
+        if processed_params == [["", nil]]
+          []
+        else
+          processed_params  
+        end
+      else
+        []
+      end
+    end
+  end
+end   

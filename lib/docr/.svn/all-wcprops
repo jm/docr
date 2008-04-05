@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 25
+/docr/!svn/ver/2/lib/docr
+END
+stats.rb
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/docr/!svn/ver/1/lib/docr/stats.rb
+END
+version.rb
+K 25
+svn:wc:ra_dav:version-url
+V 36
+/docr/!svn/ver/1/lib/docr/version.rb
+END
+processed_token.rb
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/docr/!svn/ver/1/lib/docr/processed_token.rb
+END
+parser.rb
+K 25
+svn:wc:ra_dav:version-url
+V 35
+/docr/!svn/ver/4/lib/docr/parser.rb
+END

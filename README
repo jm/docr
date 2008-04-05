@@ -1,0 +1,10 @@
+docr -- Next generation documentation generator for Ruby
+=========================================================
+
+docr is a tool to generate Ruby documentation.  It's still quite basic, but it will one day support all the features of RDoc, except have a much cleaner code base.  You can use it like this:
+
+  docr my_file.rb your_file.rb
+
+This will create HTML documentation for those files in the +(current working path)/doc/+ folder.
+
+

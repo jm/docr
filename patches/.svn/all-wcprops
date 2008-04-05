@@ -1,0 +1,11 @@
+K 25
+svn:wc:ra_dav:version-url
+V 24
+/docr/!svn/ver/1/patches
+END
+controller_mixin.diff
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/docr/!svn/ver/1/patches/controller_mixin.diff
+END

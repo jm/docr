@@ -1,0 +1,23 @@
+Index: lib/dcov/stats.rb
+===================================================================
+--- lib/dcov/stats.rb	(revision 27)
++++ lib/dcov/stats.rb	(working copy)
+@@ -9,15 +9,15 @@
+     module Helpers
+      
+       def class_coverage
+-         data[:coverage_rating][:class]
++        data[:coverage_rating][:class]
+       end
+ 
+       def module_coverage
+-         data[:coverage_rating][:module]
++        data[:coverage_rating][:module]
+       end
+ 
+       def method_coverage
+-         data[:coverage_rating][:method]
++        data[:coverage_rating][:method]
+       end
+ 
+     end

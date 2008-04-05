@@ -1,0 +1,79 @@
+8
+
+dir
+3
+http://code.jeremymcanally.com/docr/lib/docr
+http://code.jeremymcanally.com/docr
+
+
+
+2007-12-17T04:25:48.701811Z
+2
+jeremy
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+4d41afae-7341-0410-a8c4-88a274f079f5
+
+stats.rb
+file
+
+
+
+
+2007-12-17T04:24:26.000000Z
+3d1df089bae8d437a7dc73d6eae4fb76
+2007-12-17T04:23:22.604838Z
+1
+jeremy
+
+version.rb
+file
+
+
+
+
+2007-12-17T04:24:26.000000Z
+122a283c45f432764861807e6238356b
+2007-12-17T04:23:22.604838Z
+1
+jeremy
+
+generators
+dir
+
+processed_token.rb
+file
+
+
+
+
+2007-12-17T04:24:26.000000Z
+811d87d1523c576af8334d80de24ca44
+2007-12-17T04:23:22.604838Z
+1
+jeremy
+
+parser.rb
+file
+4
+
+
+
+2007-12-21T06:04:31.000000Z
+f86debedea9b6adb129f1aa634fc78bc
+2007-12-21T06:25:52.710876Z
+4
+jeremy
+

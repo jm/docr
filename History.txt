@@ -1,0 +1,15 @@
+== 0.0.1 2007-05-28
+
+* 1 major enhancement:
+  * Initial release
+
+== 0.0.2 2007-06-20
+
+* 3 major enhancements:
+  * Refactored generators out to separate classes
+  * Added rudimentary Ruport support
+  * Refactored analyzers out to separate classes to allow users to easily define custom analyzers
+
+== 0.1.0
+
+No serious enhancements other than a pretty major bug fix and a new version number. :)

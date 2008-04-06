@@ -11,8 +11,17 @@ module DocR
       tree = @parser.parse code
       walk tree
       
-      pp @classes
+      puts "found #{@classes.length} classes"
+      
       pp @modules
+      puts "found #{@modules[:ActiveRecord][:classes].length}"
+      puts "found #{@modules.length} modules"
+      
+      puts "debug? "
+      if gets() == "y"
+        pp @classes
+        pp @modules
+      end
     end
     
     def self.walk(tree, parent_label=nil)
@@ -54,6 +63,7 @@ module DocR
       # Does it even have anything in it?
       if parent.respond_to?(:values)
         parent.values.each do |value|
+          @value = value
           next unless value.is_a?(Sexp)
         
           if value[0] == :defn || value[0] == :defs
@@ -76,7 +86,7 @@ module DocR
             tokens[:modules][value[1]] = add_module(value)
           elsif value[0] == :cdecl
             # Constant declaration
-            tokens[:constants][value[1]] = value[2].value
+            tokens[:constants][value[1]] = value[2]
           elsif value[0] == :sclass && value[1] == s(:self)
             # class << self block
             tokens = tokens.meld tokens_in(value.scope, true)
@@ -85,6 +95,12 @@ module DocR
           elsif value[0] == :fcall && value[1] == :include
             # Included module
             tokens[:includes] << value.array.const.value
+          elsif value[0] == :cvdecl
+            # Class variable declaration
+          elsif value[0] == :fcall
+            # Whutever
+          elsif value[0] == :block
+            tokens = tokens.meld tokens_in(value)
           else
             # Er, whut?
             puts "ARGGhHHH!!!!!!!!!!!!!!!!!"
@@ -94,6 +110,9 @@ module DocR
       end
       
       tokens
+    rescue
+      puts "!" * 200
+      pp @value
     end
     
     def self.normalize_args(args)
@@ -114,6 +133,8 @@ module DocR
       end
       
       arguments
+    rescue
+      {}
     end
   end
 end

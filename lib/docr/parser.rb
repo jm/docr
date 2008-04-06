@@ -1,5 +1,6 @@
 require 'ruby_parser'
 require 'pp'
+require 'core_ext/hash'
 
 module DocR
   class Parser
@@ -33,8 +34,8 @@ module DocR
       {:comments => token.comments}.merge tokens_in(token.scope)
     end
     
-    def self.add_method(token)
-      {:comments => value.comments, :args => normalize_args(value.scope.block.args)}
+    def self.add_method(token, args)
+      {:comments => token.comments, :args => normalize_args(args)}
     end
     
     def self.setup_parser
@@ -46,8 +47,9 @@ module DocR
       @classes = {}
     end
     
-    def self.tokens_in(parent)
-      tokens = {:methods => {:class => {}, :instance => {}}, :classes => {}, :modules => {}}
+    # TODO: Refactor to remove class_scoped param
+    def self.tokens_in(parent, class_scoped=false)
+      tokens = {:methods => {:class => {}, :instance => {}}, :classes => {}, :modules => {}, :includes => [], :constants => {}}
 
       # Does it even have anything in it?
       if parent.respond_to?(:values)
@@ -56,10 +58,15 @@ module DocR
         
           if value[0] == :defn || value[0] == :defs
             # It's a method!
-            if value[1] == s(:self)
-              tokens[:methods][:class][value[2]] = value
+            # TODO: Public/private/protected
+            if value[1] == s(:self) || class_scoped == true
+              # Class method
+              # class << self blocks make this difficult...
+              position = class_scoped ? 1 : 2
+              tokens[:methods][:class][value[position]] = add_method(value, value.scope.args)
             else
-              tokens[:methods][:instance][value[1]] = add_method(value)
+              # Instance method
+              tokens[:methods][:instance][value[1]] = add_method(value, value.scope.block.args)
             end
           elsif value[0] == :class
             # d00d it's a class!
@@ -67,6 +74,17 @@ module DocR
           elsif value[0] == :module
             # Module FTW!!!!
             tokens[:modules][value[1]] = add_module(value)
+          elsif value[0] == :cdecl
+            # Constant declaration
+            tokens[:constants][value[1]] = value[2].value
+          elsif value[0] == :sclass && value[1] == s(:self)
+            # class << self block
+            tokens = tokens.meld tokens_in(value.scope, true)
+          elsif value[0] == :vcall
+            # Switch protection level
+          elsif value[0] == :fcall && value[1] == :include
+            # Included module
+            tokens[:includes] << value.array.const.value
           else
             # Er, whut?
             puts "ARGGhHHH!!!!!!!!!!!!!!!!!"
@@ -79,7 +97,23 @@ module DocR
     end
     
     def self.normalize_args(args)
+      # If it's nil, then just return an empty Hash
+      return {} unless args
+      arguments = {}
       
+      # Walk over the arguments and lasgn blocks
+      # TODO: Figure out why there's lasagna in my code
+      args.values.each do |arg|
+        if arg.is_a?(Symbol)
+          # New argument
+          arguments[arg] = nil unless arguments.has_key?(arg)  # In case we already have a default value
+        elsif arg.is_a?(Sexp)
+          # Default value for an argument
+          arguments[arg[1][1]] = arg[1][2].value
+        end
+      end
+      
+      arguments
     end
   end
 end

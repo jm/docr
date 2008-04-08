@@ -86,6 +86,8 @@ module DocR
             tokens[:modules][value[1]] = add_module(value)
           elsif value[0] == :cdecl
             # Constant declaration
+            # TODO: Figure out a reliable way to deal with these values
+            # I'd rather not do ruby2ruby but I might have to...
             tokens[:constants][value[1]] = value[2]
           elsif value[0] == :sclass && value[1] == s(:self)
             # class << self block
@@ -133,8 +135,6 @@ module DocR
       end
       
       arguments
-    rescue
-      {}
     end
   end
 end
